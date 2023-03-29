@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from os import listdir
 bigDF = pd.DataFrame()
-inputFolder = "D:/Covid_data_New/Yr2023/Feb/Feb27/Excels/"
+inputFolder = "D:/Covid_data_New/Yr2023/Feb/Feb27/"
 listName = 0
 filesInDir = listdir(inputFolder)
 listExcel = []

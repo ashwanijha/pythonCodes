@@ -1,6 +1,3 @@
-# %% [markdown]
-# 
-
 # %%
 from os import listdir
 from os.path import isfile, join
@@ -10,11 +7,11 @@ import pandas as pd
 # Read Exported files using pandas
 
 # %%
-import statistics
+from statistics import mean, stdev
 
 def getStatistics(data):
-    meaN = "%.3f" % statistics.mean(data)
-    stDev = "%.3f" % statistics.stdev(data)
+    meaN = "%.3f" % mean(data)
+    stDev = "%.3f" % stdev(data)
     return meaN, stDev
 
 # %%

@@ -1,34 +1,36 @@
 # %%
 import pandas as pd
+import warnings
 
 inputFolder = "D:/Covid_data_New/Yr2023/5May/5May/Res/" # Outfolder of Hari's Script
 inputFolderExcels = "D:/Covid_data_New/Yr2023/5May/5May/Excels"  # DA exported excels
 
 def wellResultFile(inputFiles,inputFolderExcels):
-    excelFiles = pd.read_excel(inputFiles, sheet_name="Amplification Data",header=None)
-    edsFile = excelFiles[:1]
-    edsFileName = edsFile[1][0].split("\\")
-    csvFile = edsFileName[-1].split(".eds")
-    ofile = open(inputFolderExcels+"/"+csvFile[0]+".csv","w")
-    ofile.write("Well,Target\n")
-    completeData = excelFiles[23:]
-    
-    completeData1 = pd.DataFrame(completeData.values[1:],columns= completeData.iloc[0])
-    wellPositon = {}
-    for i in completeData1.index:
-        cycleNumber = completeData1.loc[i,"Cycle Number"]
-        dRN = float(completeData1.loc[i,"dRn"])
-        if cycleNumber == 1:
-            if dRN < -20000:
-                #print(excelFiles.loc[i,"Well Position"],excelFiles.loc[i,"Target"],excelFiles.loc[i,"dRn"])
-                wellTarget = completeData1.loc[i,"Well Position"]+"\t"+completeData1.loc[i,"Target"]
-                wellPositon[wellTarget] = dRN
+    with warnings.catch_warnings(record=True):
+        warnings.simplefilter("always")
+        excelFiles = pd.read_excel(inputFiles, sheet_name="Amplification Data",header=None,engine="openpyxl")
+        edsFile = excelFiles[:1]
+        edsFileName = edsFile[1][0].split("\\")
+        csvFile = edsFileName[-1].split(".eds")
+        ofile = open(inputFolderExcels+"/"+csvFile[0]+".csv","w")
+        ofile.write("Well,Target\n")
+        completeData = excelFiles[23:]
+        
+        completeData1 = pd.DataFrame(completeData.values[1:],columns= completeData.iloc[0])
+        wellPositon = {}
+        for i in completeData1.index:
+            cycleNumber = completeData1.loc[i,"Cycle Number"]
+            dRN = float(completeData1.loc[i,"dRn"])
+            if cycleNumber == 1:
+                if dRN < -20000:
+                    wellTarget = completeData1.loc[i,"Well Position"]+"\t"+completeData1.loc[i,"Target"]
+                    wellPositon[wellTarget] = dRN
 
-    for i in wellPositon:
-        a = i.split("\t")
-        ofile.write(a[0]+","+a[1]+"\n")
+        for i in wellPositon:
+            a = i.split("\t")
+            ofile.write(a[0]+","+a[1]+"\n")
 
-    ofile.close()
+        ofile.close()
 
 
 
@@ -81,6 +83,10 @@ for i in annotationFile.index:
         annotationFile.at[i,"AmpStatus (Amp|Non_Amp|Unknown) -Annotator"] = "Non_Amp"
     else:
         annotationFile.at[i,"AmpStatus (Amp|Non_Amp|Unknown) -Annotator"] = "Amp"
+    
+    if annotationFile.loc[i,"AmpStatus (Amp|NoAmp|Incon) -DA specific"] == "Inconclusive":
+        annotationFile.at[i,"AmpStatus (Amp|Non_Amp|Unknown) -Annotator"] = "Amp"
+    
     
     annotationFile.at[i,"Annotator"] = "Ashwani"
         
